@@ -5,7 +5,7 @@ Some are better than others but expect the unexpected. Feel free to do PRs and o
 
 # Scripts
 
-## `scan-build-webkit.sh` (Status: Fragile)
+## `scan-build-webkit.sh` (Status: [[https://img.shields.io/badge/sh-Fragile-red.svg]])
 
 Run LLVM `scan-build` on WebKit. This expects a ubuntu like environment so you might want to use `docker-trigger.sh` on this one.
 
@@ -19,7 +19,7 @@ With any PC with docker support you should be able to run:
 ./docker-trigger.sh ubuntu:latest scan-build-webkit.sh 
 ```
 
-## `docker-trigger.sh` (Status: Fragile)
+## `docker-trigger.sh` (Status: [[https://img.shields.io/badge/sh-Fragile-red.svg]])
 
 This script will trigger another script inside a docker container and save artifacts to the current directory in `$PWD/artifacts/`.
 
