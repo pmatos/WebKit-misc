@@ -36,6 +36,6 @@ git clone --depth=1 git://git.webkit.org/WebKit.git
 cd WebKit
 Tools/Scripts/build-jsc --jsc-only --release
 cd WebKitBuild/Release
-analyze-build -v -v -v -v --cdb compile_commands.json -o build-analysis -analyzer-config 'crosscheck-with-z3=true'
+analyze-build -v --cdb compile_commands.json -o build-analysis -analyzer-config 'crosscheck-with-z3=true'
 
 mv build-analysis /artifacts
