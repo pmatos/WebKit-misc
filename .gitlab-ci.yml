@@ -1,6 +1,9 @@
 image: ubuntu:latest
 
 scan:jsc:
+  tags:
+    - x86_64
+    - linux
   only:
     refs:
       - schedules
