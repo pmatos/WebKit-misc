@@ -19,6 +19,7 @@ unzip z3-4.8.5-x64-debian-8.11.zip
 mv z3-4.8.5-x64-debian-8.11/bin z3-4.8.5-x64-debian-8.11/include $INSTALL_DIR
 
 export PATH=$INSTALL_DIR/bin:$PATH
+export LD_LIBRARY_PATH=$INSTALL_DIR/bin:$LD_LIBRARY_PATH
 git clone --depth=1 https://github.com/llvm/llvm-project.git
 cd llvm-project
 wget -O bug41809.patch https://bugs.llvm.org/attachment.cgi?id=22160
