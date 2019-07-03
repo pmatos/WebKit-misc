@@ -1,0 +1,15 @@
+image: ubuntu:latest
+
+scan:jsc:
+  only:
+    refs:
+      - schedules
+  before_script:
+    - mkdir /artifacts
+  script:
+    - bash -x ./scan-build-webkit.sh
+  artifacts:
+    paths:
+      - /artifacts
+
+
