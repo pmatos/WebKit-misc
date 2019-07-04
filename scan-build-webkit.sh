@@ -2,6 +2,11 @@
 
 set -e
 
+if [ -z $1 ]; then
+    ARTIFACTS=/artifacts
+else
+    ARTIFACTS=$1
+fi
 CWD=$PWD
 INSTALL_DIR=$PWD/install
 mkdir $INSTALL_DIR

@@ -8,11 +8,11 @@ scan:jsc:
     refs:
       - schedules
   before_script:
-    - mkdir /artifacts
+    - mkdir $CI_PROJECT_DIR/results
   script:
-    - bash -x ./scan-build-webkit.sh
+    - bash -x ./scan-build-webkit.sh $CI_PROJECT_DIR/results
   artifacts:
     paths:
-      - /artifacts
+      - $CI_PROJECT_DIR/results
 
 
