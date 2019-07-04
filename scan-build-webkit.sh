@@ -43,4 +43,4 @@ Tools/Scripts/build-jsc --jsc-only --release
 cd WebKitBuild/Release
 analyze-build -v --cdb compile_commands.json -o build-analysis -analyzer-config 'crosscheck-with-z3=true'
 
-mv build-analysis /artifacts
+mv build-analysis $ARTIFACTS
