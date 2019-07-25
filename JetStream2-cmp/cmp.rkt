@@ -182,10 +182,14 @@
 
   (set->list (set-intersect r1-mods r2-mods)))
 
+(define/contract (percent n1 n2)
+  (number? number? . -> . number?)
+  (* (/ (- n2 n1) n1) 100))
+
 (define/contract (print-row name r1 r2)
   (string? any/c any/c . -> . void?)
   (if (and (number? r1) (number? r2))
-      (printf "~a:\t~a\t~a\t~a%~n" name r1 r2 (~r (/ (- r2 r1) r2) #:precision 2))
+      (printf "~a:\t~a\t~a\t~a%~n" name r1 r2 (~r (percent r1 r2) #:precision 2))
       (printf "~a:\t~a\t~a~n" name r1 r2)))
 
 (define (compare-modules m1 m2)
