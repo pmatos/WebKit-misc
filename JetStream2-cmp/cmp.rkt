@@ -34,6 +34,12 @@
 (define-generics named
   (module-name named))
 
+(define-generics timed
+  (module-walltime timed))
+
+(define-generics scored
+  (module-score scored))
+
 (struct jetstream2-output
   (modresults    ; hash: name -> module-results
    finalresults  ; final-results
@@ -50,6 +56,10 @@
   (name startup worst average score walltime)
   #:methods gen:named
   [(define (module-name s) (module-results-name s))]
+  #:methods gen:timed
+  [(define (module-walltime s) (module-results-walltime s))]
+  #:methods gen:scored
+  [(define (module-score s) (module-results-score s))]
   #:methods gen:jsonifiable
   [(define (jsonify s)
      (make-hash `((name . ,(module-results-name s))
@@ -63,6 +73,10 @@
   (name stdlib tests score walltime)
   #:methods gen:named
   [(define (module-name s) (wsl-results-name s))]
+  #:methods gen:timed
+  [(define (module-walltime s) (wsl-results-walltime s))]
+  #:methods gen:scored
+  [(define (module-score s) (wsl-results-score s))]
   #:methods gen:jsonifiable
   [(define (jsonify s)
      (make-hash `((name . ,(wsl-results-name s))
@@ -109,20 +123,21 @@
   ;  Score: 11.968
   ;  Wall time: 0:02.787
   (define name (second (regexp-match #px"^Running ([^:]+):$" (read-line in))))
+  (printf "Parsing ~a~n" name)
 
   (cond
     [(string=? name "WSL")
-     (define stdlib (string->number (second (regexp-match #px"^[[:blank:]]+Stdlib: ([0-9]+.[0-9]+)$" (read-line in)))))
-     (define tests (string->number (second (regexp-match #px"^[[:blank:]]+Tests: ([0-9]+.[0-9]+)$" (read-line in)))))
-     (define score (string->number (second (regexp-match #px"^[[:blank:]]+Score: ([0-9]+.[0-9]+)$" (read-line in)))))
+     (define stdlib (string->number (second (regexp-match #px"^[[:blank:]]+Stdlib: ([0-9]+(.[0-9]+)?)$" (read-line in)))))
+     (define tests (string->number (second (regexp-match #px"^[[:blank:]]+Tests: ([0-9]+(.[0-9]+)?)$" (read-line in)))))
+     (define score (string->number (second (regexp-match #px"^[[:blank:]]+Score: ([0-9]+(.[0-9]+)?)$" (read-line in)))))
      (define walltime (second (regexp-match #px"^[[:blank:]]+Wall time: ([0-9]+:[0-9]+\\.[0-9]+)$" (read-line in))))
 
      (wsl-results name stdlib tests score walltime)]
     [else
-     (define startup (string->number (second (regexp-match #px"^[[:blank:]]+Startup: ([0-9]+.[0-9]+)$" (read-line in)))))
-     (define worstcase (string->number (second (regexp-match #px"^[[:blank:]]+Worst Case: ([0-9]+.[0-9]+)$" (read-line in)))))
-     (define average (string->number (second (regexp-match #px"^[[:blank:]]+Average: ([0-9]+.[0-9]+)$" (read-line in)))))
-     (define score (string->number (second (regexp-match #px"^[[:blank:]]+Score: ([0-9]+.[0-9]+)$" (read-line in)))))
+     (define startup (string->number (second (regexp-match #px"^[[:blank:]]+Startup: ([0-9]+(.[0-9]+)?)$" (read-line in)))))
+     (define worstcase (string->number (second (regexp-match #px"^[[:blank:]]+Worst Case: ([0-9]+(.[0-9]+)?)$" (read-line in)))))
+     (define average (string->number (second (regexp-match #px"^[[:blank:]]+Average: ([0-9]+(.[0-9]+)?)$" (read-line in)))))
+     (define score (string->number (second (regexp-match #px"^[[:blank:]]+Score: ([0-9]+(.[0-9]+)?)$" (read-line in)))))
      (define walltime (second (regexp-match #px"^[[:blank:]]+Wall time: ([0-9]+:[0-9]+\\.[0-9]+)$" (read-line in))))
 
      (module-results name startup worstcase average score walltime)]))
@@ -240,7 +255,44 @@
 
   (define score1 (jetstream2-output-totalscore r1))
   (define score2 (jetstream2-output-totalscore r2))
-  (print-row "Total Score" score1 score2))
+  (print-row "Total Score" score1 score2)
+
+  (show-winners-by-duration n1 r1 n2 r2 common-modules))
+
+(define (time->ms strtime)
+  (define-values (mins secs mss) (apply values (map string->number (rest (regexp-match #px"([0-9]+):([0-9]+).([0-9]+)" strtime)))))
+  (+ mss (* secs 1000) (* mins 60000)))
+
+(define (show-winners-by-duration n1 r1 n2 r2 common)
+  (define winners
+    (for/list ([m (in-list common)])
+      (define m1 (hash-ref (jetstream2-output-modresults r1) m))
+      (define m2 (hash-ref (jetstream2-output-modresults r2) m))
+
+      (define name (module-name m1))
+      (define mstime1 (time->ms (module-walltime m1)))
+      (define mstime2 (time->ms (module-walltime m2)))
+
+      (define score1 (module-score m1))
+      (define score2 (module-score m2))
+
+      (define winner (if (> score1 score2) n1 n2))
+      (define winnertime (if (> score1 score2) mstime1 mstime2))
+      (define-values (winnerscore loserscore)
+        (if (> score1 score2)
+            (values score1 score2)
+            (values score2 score1)))
+
+      (cons winnertime (list name winner winnerscore loserscore))))
+
+  (define sorted-winners (sort winners < #:key car))
+
+  (printf "~nWINNERS:~n")
+  (printf "--------~n")
+
+  (for ([w (in-list sorted-winners)])
+    (define-values (name winner winnerscore loserscore) (apply values (rest w)))
+    (printf "~a\t~a\t~a\t~a (vs ~a)~n" (first w) name winner winnerscore loserscore)))
 
 (module+ main
 
