@@ -27,3 +27,17 @@ Try
 ```
 $ ./docker-trigger.sh ubuntu:latest ./hello-world.sh
 ```
+
+## `JetStream2-cmp/cmp.rkt` (Status: ![Fragile](https://img.shields.io/badge/sh-Fragile-red.svg))
+
+This script will compare the outputs of two cli JetStream2 runs. Inside WebKit, you can go to `PerformanceTests/JetStream2` and after build `jsc`, you can run:
+
+```
+../../WebKitBuild/Release/bin/jsc cli.js 2>&1 | tee output.log
+```
+
+If you build another version of jsc and run the same command line you can then compare the results with:
+
+```
+racket cmp.rkt VERSION1 <Path to WebKit1>/PerformanceTests/JetStream2/output.log VERSION1 <Path to WebKit2>/PerformanceTests/JetStream2/output.log 2>&1 | less
+```
