@@ -31,7 +31,7 @@ wget -O bug41809.patch https://bugs.llvm.org/attachment.cgi?id=22160
 patch -p1 < bug41809.patch
 mkdir build
 cd build
-cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR -DLLVM_ENABLE_Z3_SOLVER=ON -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS=clang -DZ3_INCLUDE_DIR=$INSTALL_DIR/include/ -DCMAKE_BUILD_TYPE=Release ../llvm/
+cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR -DLLVM_ENABLE_Z3_SOLVER=ON -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS=clang -DZ3_INCLUDE_DIR=$INSTALL_DIR/include/ -DCMAKE_BUILD_TYPE=Debug ../llvm/
 ninja
 ninja install
 
@@ -39,8 +39,8 @@ cd $CWD
 pip install scan-build
 git clone --depth=1 git://git.webkit.org/WebKit.git
 cd WebKit
-Tools/Scripts/build-jsc --jsc-only --release
-cd WebKitBuild/Release
+Tools/Scripts/build-jsc --jsc-only --debug
+cd WebKitBuild/Debug
 analyze-build -v --cdb compile_commands.json -o build-analysis -analyzer-config 'crosscheck-with-z3=true'
 
 mv build-analysis $ARTIFACTS
