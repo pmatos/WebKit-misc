@@ -31,7 +31,7 @@ wget -O bug41809.patch https://bugs.llvm.org/attachment.cgi?id=22160
 patch -p1 < bug41809.patch
 mkdir build
 cd build
-cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR -DLLVM_ENABLE_Z3_SOLVER=ON -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS=clang -DZ3_INCLUDE_DIR=$INSTALL_DIR/include/ -DCMAKE_BUILD_TYPE=Debug ../llvm/
+cmake -G Ninja -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR -DLLVM_ENABLE_Z3_SOLVER=ON -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS=clang -DZ3_INCLUDE_DIR=$INSTALL_DIR/include/ -DCMAKE_BUILD_TYPE=Release ../llvm/
 ninja
 ninja install
 
