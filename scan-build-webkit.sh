@@ -23,9 +23,9 @@ GITPID=$!
 
 apt-get install -y gcc cmake wget unzip g++ python libxml2-dev ninja-build python ruby python-pip
 
-wget https://github.com/Z3Prover/z3/releases/download/Z3-4.8.5/z3-4.8.5-x64-debian-8.11.zip
-unzip z3-4.8.5-x64-debian-8.11.zip
-mv z3-4.8.5-x64-debian-8.11/bin z3-4.8.5-x64-debian-8.11/include $INSTALL_DIR
+wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.6/z3-4.8.6-x64-ubuntu-16.04.zip
+unzip z3-4.8.6-x64-ubuntu-16.04.zip
+mv z3-4.8.6-x64-ubuntu-16.04/bin z3-4.8.6-x64-ubuntu-16.04/include $INSTALL_DIR
 
 export PATH=$INSTALL_DIR/bin:$PATH
 export LD_LIBRARY_PATH=$INSTALL_DIR/bin:$LD_LIBRARY_PATH
