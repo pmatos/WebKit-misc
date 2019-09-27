@@ -17,7 +17,11 @@ mkdir $INSTALL_DIR
 apt-get update
 apt-get upgrade -y
 
-apt-get install -y gcc git cmake wget unzip g++ python libxml2-dev ninja-build python ruby python-pip
+apt-get install -y git
+git clone --progress --depth=1 git://git.webkit.org/WebKit.git 2> out.log &
+GITPID=$!
+
+apt-get install -y gcc cmake wget unzip g++ python libxml2-dev ninja-build python ruby python-pip
 
 wget https://github.com/Z3Prover/z3/releases/download/Z3-4.8.5/z3-4.8.5-x64-debian-8.11.zip
 unzip z3-4.8.5-x64-debian-8.11.zip
@@ -37,7 +41,8 @@ ninja install
 
 cd $CWD
 pip install scan-build
-git clone --depth=1 git://git.webkit.org/WebKit.git
+
+wait ${GITPID}
 cd WebKit
 Tools/Scripts/build-jsc --jsc-only --debug
 cd WebKitBuild/Debug
