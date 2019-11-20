@@ -1,0 +1,59 @@
+name: CI
+
+on: 
+  push:
+    paths:
+      - 'containers/jsc32-base/**'
+      - '.github/workflows/webkitbuild-image-creation.yml'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: 
+        arch: [mips, arm]
+      
+    steps:
+    - uses: actions/checkout@v1
+    - name: Login to docker hub
+      run: docker login -u pmatos -p ${{ secrets.DOCKER_PASS }}
+    - name: Build
+      working-directory: containers/jsc32-base/
+      run: ./bimage.sh ${{ matrix.arch }}
+
+  test-image:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: debian:buster
+      options: --privileged -v /var/run/docker.sock:/var/run/docker.sock
+      
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [mips, arm]
+        orch: [podman, docker]
+
+    steps:
+    - name: Install qemu and binfmt support
+      run: |
+        apt-get update
+        apt-get install -y gpg software-properties-common qemu-user-static binfmt-support
+    - name: Install podman if needed
+      if: matrix.orch == 'podman'
+      run: |
+        add-apt-repository -y ppa:projectatomic/ppa
+        apt-get update
+        apt-get install -y podman
+    - name: Install docker if needed
+      if: matrix.orch == 'docker'
+      run: |
+        apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
+        curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+        apt-key fingerprint 0EBFCD88
+        add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+        apt-get update
+        apt-get install -y docker-ce docker-ce-cli containerd.io
+    - name: Test image architecture
+      run: ${{ matrix.orch }} run pmatos/jsc32-base:${{ matrix.arch }} /bin/bash -c "[[ \"$(uname -m)\" == \"${{ matrix.arch }}\" ]] || exit 1"  
