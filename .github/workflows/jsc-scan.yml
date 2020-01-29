@@ -13,9 +13,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Create results dir
-        run: mkdir ${{ github.workspace }}/results
+        run: mkdir -p $GITHUB_WORKSPACE/results
       - name: Scan
-        run: ./scan-build-webkit.sh ${{ github.workspace }}/results
+        run: ./scan-build-webkit.sh $GITHUB_WORKSPACE/results
       - name: Archive results
         uses: actions/upload-artifact@v1
         with:
