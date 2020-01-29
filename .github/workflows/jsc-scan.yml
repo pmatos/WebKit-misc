@@ -1,0 +1,21 @@
+name: jsc-scan
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    container: ubuntu:18.04
+    
+    steps:
+      - name: Create results dir
+        run: mkdir ${{ github.workspace }}/results
+      - name: Scan
+        run: ./scan-build-webkit.sh ${{ github.workspace }}/results
+      - name: Archive results
+        uses: actions/upload-artifact@v1
+        with:
+          name: scan-results
+          path: ${{ github.workspace }}/results
