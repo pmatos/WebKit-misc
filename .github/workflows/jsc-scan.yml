@@ -1,4 +1,4 @@
-name: jsc-scan
+name: JSC Scan
 
 on: [push]
 #  schedule:
