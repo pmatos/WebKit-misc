@@ -40,7 +40,7 @@ setup_images() {
     for i in `seq 1 $N`
     do
 	local p=${TESTTMP_PATH}/rootfs-${i}.qcow2
-	${QEMUIMG_PATH} create -b $HDD_PATH $p
+	${QEMUIMG_PATH} create -q -b $HDD_PATH $p
 	IMAGES[${i}]=$p
 	echo "Creating image for machine ${i} at ${p}"
     done
