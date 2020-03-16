@@ -25,8 +25,9 @@ BRPATH=$4
 
 TESTTMP_PATH=$(mktemp -d)
 
+QEMUIMG_PATH=$BRPATH/host/bin/qemu-img
 QEMU_PATH=$BRPATH/host/bin/qemu-system-mipsel
-HDD_PATH=$BRPATH/images/rootfs.ext2
+HDD_PATH=$BRPATH/images/rootfs.qcow2
 KERNEL_PATH=$BRPATH/images/vmlinux
 REMOTES_PATH=$(mktemp)
 
@@ -38,8 +39,8 @@ declare -a PIDS
 setup_images() {
     for i in `seq 1 $N`
     do
-	local p=$TESTTMP_PATH/rootfs-${i}.ext2
-	cp $HDD_PATH $p
+	local p=${TESTTMP_PATH}/rootfs-${i}.qcow2
+	${QEMUIMG_PATH} create -b $HDD_PATH $p
 	IMAGES[${i}]=$p
 	echo "Creating image for machine ${i} at ${p}"
     done
