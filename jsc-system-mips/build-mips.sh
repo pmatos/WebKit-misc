@@ -11,7 +11,7 @@
 #                    output-directory
 #
 
-PROGRAM=$(basename $0)
+PROGRAM=$(basename "$0")
 VERSION=1.0
 
 DATESTART=$(date +%s%N)
@@ -24,8 +24,9 @@ JLEVEL=$(nproc)
 
 progress()
 {
-    local now=$(date +%s%N)
-    echo "=== $(( $now - $DATESTART )): $@"
+    local now
+    now=$(date +%s%N)
+    echo "=== $(( (now - DATESTART) / 1000000 )): $*"
 }
 
 error()
@@ -37,7 +38,7 @@ error()
 usage_and_exit()
 {
     usage
-    exit $1
+    exit "$1"
 }
 
 version()
@@ -51,7 +52,7 @@ usage()
 Usage:
 	$PROGRAM 
 		 [ -h | --help | --? ]     Show help and exit
-                 [ -j ]                    Number of cores to use during build (default: `nproc`)
+                 [ -j ]                    Number of cores to use during build (default: $(nproc))
 		 [ --br2 "..." ]           Path to custom buildroot tree (default: checkout)
 		 [ --br2-version "..." ]   Buildroot tag to checkout (default: $BR2VERSION)
 		 [ --br2-external "..." ]  Path to custom buildroot JSC external tree (default: checkout)
@@ -112,34 +113,34 @@ if [ -z "${TEMPPATH}" ]; then
 fi
 
 # Receives one argument, the destination directory for the build
-OUTPUT="$(realpath $1)"
-if ! mkdir ${OUTPUT} &> /dev/null; then
+OUTPUT=$(realpath "$1")
+if ! mkdir "${OUTPUT}" &> /dev/null; then
     error "output path already exists: ${OUTPUT}"
 fi
 
 progress "Creating MIPS toolchain in ${OUTPUT}"
 
-pushd "${TEMPPATH}"
+pushd "${TEMPPATH}" || error "cannot pushd"
 if [ -z "${BR2EXTERNAL}" ]; then
     progress "cloning jsc br2 external"
     git clone --quiet --depth=1 https://github.com/pmatos/jsc-br2-external.git
 fi
 if [ -z "${BR2PATH}" ]; then
     progress "cloning buildroot"
-    git clone --quiet --depth=1 --branch ${BR2VERSION} https://github.com/buildroot/buildroot
+    git clone --quiet --depth=1 --branch "${BR2VERSION}" https://github.com/buildroot/buildroot
 fi
-popd
+popd || error "cannot popd"
 
-pushd "${OUTPUT}"
+pushd "${OUTPUT}" || error "cannot pushd"
 progress "configuring buildroot defconfig"
-if ! make O=$PWD -C ${TEMPPATH}/buildroot BR2_EXTERNAL=${TEMPPATH}/jsc-br2-external qemu-mips32elr2-jsc_defconfig &> ${TEMPPATH}/configure.log; then
-    tail ${TEMPPATH}/configure.log
+if ! make O="${PWD}" -C "${TEMPPATH}/buildroot" BR2_EXTERNAL="${TEMPPATH}/jsc-br2-external" qemu-mips32elr2-jsc_defconfig &> "${TEMPPATH}/configure.log"; then
+    tail "${TEMPPATH}/configure.log"
     error "failed to configure buildroot"
 fi
 
 progress "building root"
-if ! make BR2_JLEVEL=${JLEVEL} &> ${TEMPPATH}/build.log; then
-    tail ${TEMPPATH}/build.log
+if ! make BR2_JLEVEL="${JLEVEL}" &> "${TEMPPATH}/build.log"; then
+    tail "${TEMPPATH}/build.log"
     error "failed to build buildroot"
 fi
 
@@ -148,8 +149,8 @@ progress "Converting raw image to qcow2"
 if ! host/bin/qemu-img -q -O qcow2 images/rootfs.ext2 images/rootfs.qcow2; then
     error "Failed to convert image"
 fi
-popd
+popd || error "cannot popd"
 
 progress "Cleaning up temporary folder ${TEMPPATH}"
-rm -Rf ${TEMPPATH}
+rm -Rf "${TEMPPATH}"
 
