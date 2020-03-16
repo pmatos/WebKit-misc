@@ -1,0 +1,149 @@
+#!/usr/bin/env ruby
+require 'fileutils'
+require 'optparse'
+require 'pathname'
+require 'tmpdir'
+
+$options = {
+  quiet: false,
+  buildroot: nil,
+  menuconfig: false,
+  externals: [],
+  br2_version: "2020.02",
+  logfile: "configure.log",
+  br2_config: nil,
+}
+
+def putv(s)
+  if $options[:quiet]
+    return
+  end
+  puts(s)
+end
+
+def run_cmd(cmd)
+  system(cmd)
+  if not $?.success?
+    $stderr.puts("Command failed: `#{cmd}`")
+    exit(1)
+  end
+end
+
+Repository = Struct.new(:url, :flags) do
+  def expand_flags
+    flags.collect { |f|
+      if f.is_a?(Symbol)
+        $options[f]
+      else
+        f
+      end
+    }
+  end
+  def checkout
+    flags = expand_flags.join(" ")
+    cmd = "git clone #{flags} #{url}"
+    putv("Checking out #{url} in #{Dir.pwd}")
+    run_cmd(cmd)
+    Pathname.pwd + File.basename(url.split("/")[-1], ".git")
+  end
+end
+
+repos = {
+  buildroot: Repository.new("https://github.com/buildroot/buildroot",
+                        [
+                          "--depth=1",
+                          "--branch", :br2_version,
+                        ]),
+  jsc_br2_external: Repository.new("https://github.com/pmatos/jsc-br2-external.git",
+                               [
+                                 "--depth=1",
+                               ]),
+
+}
+
+parser = OptionParser.new { |opts|
+  opts.on("-b", "--buildroot=PATH", "Use an existing buildroot checkout") { |p|
+    $options[:buildroot] = p
+  }
+  opts.on("-e", "--external=PATH", "Add BR2 external (may be specified multiple times") { |p|
+    $options[:externals] << p
+  }
+  opts.on("-m", "--[no-]menuconfig", "Run menuconfig interactively") { |b|
+    $options[:menuconfig] = b
+  }
+  opts.on("-q", "--quiet", "Don't produce extraneous output") { |q|
+    $options[:quiet] = q
+  }
+  opts.on("-c", "--config=NAME", "BR2 config to use (mandatory)") { |n|
+    $options[:br2_config] = n
+  }
+  opts.on("-h", "--help", "Print help") { |x|
+    $stderr.puts(opts)
+    exit(0)
+  }
+}
+
+parser.parse!
+
+if $options[:br2_config].nil?
+  $stderr.puts("Need a config name")
+  $stderr.puts(parser)
+  exit(2)
+end
+
+if $options[:menuconfig]
+  [$stdin, $stdout].each { |f|
+    if not f.isatty
+      $stderr.puts("Cannot run menuconfig: stdin/stdout must both be a tty")
+      exit(2)
+    end
+  }
+end
+
+if ARGV.size != 1
+  $stderr.puts("Need exactly one anonymous argument")
+  $stderr.puts(parser)
+  exit(2)
+end
+
+dstpath = ARGV.shift
+
+if File.exist?(dstpath)
+  $stderr.puts("Destination path `#{dstpath}` already exists")
+  exit(2)
+end
+
+([$options[:buildroot]] + $options[:externals]).each { |p|
+  next unless p
+  if not File.directory?(p)
+    $stderr.puts("Specified path #{p} must be a directory")
+    exit(2)
+  end
+}
+
+FileUtils.mkdir_p(dstpath)
+
+Dir.mktmpdir("build-mips") { |tmpdir|
+  if $options[:buildroot].nil?
+    Dir.chdir(tmpdir) {
+      $options[:buildroot] = repos[:buildroot].checkout
+    }
+  end
+  if $options[:externals].size == 0
+    Dir.chdir(tmpdir) {
+      $options[:externals] << repos[:jsc_br2_external].checkout
+    }
+  end
+  Dir.chdir(dstpath) {
+    externals = $options[:externals].collect { |e|
+      "BR2_EXTERNAL=#{e}"
+    }.join(" ")
+    base_cmd = "make O=#{dstpath} -C #{$options[:buildroot]} #{externals}"
+    run_cmd("#{base_cmd} qemu-mips32elr2-jsc_defconfig 2>&1 | tee \"#{$options[:logfile]}\"")
+    if $options[:menuconfig]
+      run_cmd("#{base_cmd} menuconfig 2>\"#{$options[:logfile]}\"")
+    end
+    run_cmd("make BR2_JLEVEL=16 2>&1 | tee \"#{$options[:logfile]}\"")
+  }
+}
+
