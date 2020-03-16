@@ -14,7 +14,7 @@
 PROGRAM=$(basename $0)
 VERSION=1.0
 
-DATESTART=$(date +%sN)
+DATESTART=$(date +%s%N)
 
 BR2PATH=
 BR2VERSION='2020.02'
@@ -24,7 +24,7 @@ JLEVEL=$(nproc)
 
 progress()
 {
-    local now=$(date +%sN)
+    local now=$(date +%s%N)
     echo "=== $(( $now - $DATESTART )): $@"
 }
 
