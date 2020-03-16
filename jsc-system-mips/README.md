@@ -30,7 +30,7 @@ To test JSC, you can use as many virtual machines are you want as long as you ha
 For example:
 
 ``` shellsession
-$ ./test-mips.sh 16 61000 ${HOME}/dev/WebKit ${MIPSINSTALL}
+$ ./test-jsc.sh 16 61000 ${HOME}/dev/WebKit ${MIPSINSTALL}
 ```
 
 This script receives 4 arguments:
