@@ -1,0 +1,21 @@
+name: Shellcheck JSC QEMU System
+
+on:
+  push:
+    paths:
+      - 'jsc-system-mips/**'
+      - '.github/workflows/shellcheck-jsc-qemu-system.yml'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    container: debian:buster-slim
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get Shellcheck
+        run: apt-get update && apt-get install -y shellcheck
+      - name: Check
+        working-directory: ./jsc-system-mips
+        run: shellcheck *.sh
