@@ -4,6 +4,7 @@
 # Usage:
 #      build-jsc.sh [ --? ]
 #                   [ --version ]
+#                   [ --release | --debug ]
 #                   webkit-directory
 #                   buildroot-path
 
@@ -21,10 +22,13 @@ Usage:
 	$PROGRAM 
 		 [ -h | --help | --? ]     Show help and exit
 		 [ --version ]             Show version and exit
+		 [ --release | --debug ]   JSC Build mode (default: release)
 		 webkit-directory          Directory with WebKit checkout
 		 buildroot-directory       Directory with Buildroot install
 EOF
 }
+
+DEBUG=0
 
 while test $# -gt 0
 do
@@ -35,6 +39,14 @@ do
 	    ;;
 	--help | -h | '--?' )
 	    usage_and_exit 0
+	    ;;
+	--release )
+	    DEBUG=0
+	    break
+	    ;;
+	--debug )
+	    DEBUG=1
+	    break
 	    ;;
 	-*)
 	    error "Unrecognized option: $1"
@@ -69,13 +81,21 @@ if [ -d "${WEBKIT_PATH}/WebKitBuild" ]; then
     exit 1
 fi
 
+DFLAG="--release"
+if [[ ${DEBUG} == "1" ]]; then
+    DFLAGS="--debug"
+fi
+
 pushd "${WEBKIT_PATH}" || error "push failure"
 
 TMPLOG=$(mktemp)
-if ! Tools/Scripts/build-jsc --release --jsc-only --cmakeargs="-DCMAKE_TOOLCHAIN_FILE=${BRPATH}/host/share/buildroot/toolchainfile.cmake -DENABLE_STATIC_JSC=ON" &> "${TMPLOG}"; then
+progress "building jsc"
+if ! Tools/Scripts/build-jsc "${DFLAG}" --jsc-only --cmakeargs="-DCMAKE_TOOLCHAIN_FILE=${BRPATH}/host/share/buildroot/toolchainfile.cmake -DENABLE_STATIC_JSC=ON" &> "${TMPLOG}"; then
     progress "failed to build JSC, log tail is:"
     tail "${TMPLOG}"
     error "full log can be found at: ${TMPLOG}"
 fi
 
 popd || error "popd failure"
+
+progress "jsc build finished successfully"
