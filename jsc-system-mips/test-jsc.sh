@@ -145,7 +145,7 @@ setup_images() {
 	local p
 	progress "Creating image for machine ${i} at ${p}"
 	p="${TESTTMP_PATH}/rootfs-${i}.qcow2"
-	"${QEMUIMG_PATH}" create -q -b "${HDD_PATH}" "${p}"
+	"${QEMUIMG_PATH}" create -q -f qcow2 -b "${HDD_PATH}" "${p}"
 	IMAGES[${i}]=$p
     done
 }
