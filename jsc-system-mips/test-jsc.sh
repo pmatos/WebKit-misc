@@ -178,7 +178,7 @@ do
 	       -net user,hostfwd=tcp::${PORTS[${i}]}-:22 \
 	       -serial none \
 	       -monitor none \
-	       -drive format=raw,file="${IMAGES[${i}]}" &
+	       -drive format=qcow2,file="${IMAGES[${i}]}" &
     PIDS[${i}]=$!
     progress "Starting virtual mips machine with pid ${PIDS[${i}]} listening to ssh on port ${PORTS[${i}]}"
 done
