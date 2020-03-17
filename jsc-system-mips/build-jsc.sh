@@ -83,7 +83,7 @@ fi
 
 DFLAG="--release"
 if [[ ${DEBUG} == "1" ]]; then
-    DFLAGS="--debug"
+    DFLAG="--debug"
 fi
 
 pushd "${WEBKIT_PATH}" || error "push failure"
