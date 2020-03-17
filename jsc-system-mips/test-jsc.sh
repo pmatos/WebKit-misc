@@ -58,30 +58,24 @@ do
 	--timeout )
 	    shift
 	    TIMEOUT=$1
-	    break
 	    ;;
 	--release )
 	    DEBUG=0
-	    break
 	    ;;
 	--debug )
 	    DEBUG=1
-	    break
 	    ;;
 	--vms )
 	    shift
 	    N=$1
-	    break
 	    ;;
 	--port )
 	    shift
 	    P=$1
-	    break
 	    ;;
 	--filter )
 	    shift
 	    FILTER=$1
-	    break
 	    ;;
 	-*)
 	    error "Unrecognized option: $1"
