@@ -4,6 +4,7 @@
 # Usage:
 #      test-jsc.sh [ --? | -h | --help ]
 #                  [ --version]
+#                  [ --timeout "..." ]
 #                  [ --release | --debug ]
 #                  [ --filter "..." ]
 #                  [ --vms "..." ]
@@ -28,6 +29,7 @@ Usage:
 	$PROGRAM 
 		 [ -h | --help | --? ]     Show help and exit
 		 [ --version ]             Show version and exit
+		 [ --timeout N ]           Set timeout per test (default: 120)
 		 [ --release | --debug ]   JSC test mode (default: release)
                  [ --vms N ]               Number of mips vms to start for testing
 		 [ --filter REGEX ]        Filter for tests, passed unmodified to run-javascriptcore-tests
@@ -37,7 +39,7 @@ Usage:
 EOF
 }
 
-
+TIMEOUT=120
 N=
 P=
 DEBUG=0
@@ -52,6 +54,11 @@ do
 	    ;;
 	--help | -h | '--?' )
 	    usage_and_exit 0
+	    ;;
+	--timeout )
+	    shift
+	    TIMEOUT=$1
+	    break
 	    ;;
 	--release )
 	    DEBUG=0
@@ -227,6 +234,7 @@ echo '] }'                                       >> "$REMOTES_PATH"
 progress "running tests with output redirected to stdout"
 
 # Run tests through run-javascriptcore-tests
+export JSCTEST_timeout="${TIMEOUT}"
 "${WEBKIT_PATH}"/Tools/Scripts/run-javascriptcore-tests --no-build --no-fail-fast "${DFLAG}" --memory-limited --remote-config-file "${REMOTES_PATH}" --no-testmasm --no-testair --no-testb3 --no-testdfg --no-testapi --jsc-only "${FFLAG}" 2>&1
 
 # Killall qemu systems and clean up HDDs
