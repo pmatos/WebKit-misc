@@ -125,7 +125,7 @@ fi
 
 # Need to convert image to use it as backing file
 progress "Converting raw image to qcow2"
-if ! host/bin/qemu-img -q -O qcow2 images/rootfs.ext2 images/rootfs.qcow2; then
+if ! host/bin/qemu-img convert -q -O qcow2 images/rootfs.ext2 images/rootfs.qcow2; then
     error "Failed to convert image"
 fi
 popd || error "cannot popd"
