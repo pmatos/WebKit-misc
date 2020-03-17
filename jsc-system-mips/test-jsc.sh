@@ -143,10 +143,10 @@ setup_images() {
     for i in $(seq 1 "${N}")
     do
 	local p
+	progress "Creating image for machine ${i} at ${p}"
 	p="${TESTTMP_PATH}/rootfs-${i}.qcow2"
 	"${QEMUIMG_PATH}" create -q -b "${HDD_PATH}" "${p}"
 	IMAGES[${i}]=$p
-	progress "Creating image for machine ${i} at ${p}"
     done
 }
 
