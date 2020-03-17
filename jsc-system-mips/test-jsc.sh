@@ -13,7 +13,7 @@
 #                  buildroot-path
 #
 
-PROGRAM=$(basnemae "$0")
+PROGRAM=$(basename "$0")
 VERSION=1.0
 
 DATESTART=$(date +%s%N)
