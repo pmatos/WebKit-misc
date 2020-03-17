@@ -44,11 +44,9 @@ do
 	    ;;
 	--release )
 	    DEBUG=0
-	    break
 	    ;;
 	--debug )
 	    DEBUG=1
-	    break
 	    ;;
 	-*)
 	    error "Unrecognized option: $1"
