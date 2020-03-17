@@ -2,7 +2,7 @@
 # Builds a MIPS based toolchain and qemu-system for testing and debugging WebKit.
 #
 # Usage:
-#      build-mips.sh [ --? ]
+#      build-mips.sh [ --? | -h | --help ]
 #                    [ --br2 "..." ]
 #                    [ --br2-version "..." ]
 #                    [ --br2-external "..." ]
