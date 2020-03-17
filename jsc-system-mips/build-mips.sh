@@ -21,8 +21,9 @@ BR2VERSION='2020.02'
 BR2EXTERNAL=
 TEMPPATH=
 JLEVEL=$(nproc)
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-source "./common.sh"
+source "${DIR}/common.sh"
 
 usage()
 {
