@@ -62,6 +62,10 @@ do
 	    shift
 	    TEMPPATH="$1"
 	    ;;
+	-a | --arch )
+	    shift
+	    ARCH="$1"
+	    ;;
 	-j )
 	    shift
 	    JLEVEL="$1"
