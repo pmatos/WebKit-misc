@@ -1,19 +1,21 @@
 #! /bin/bash
-# Builds a MIPS based toolchain and qemu-system for testing and debugging WebKit.
+# Builds a toolchain and qemu-system for testing and debugging WebKit.
 #
 # Usage:
-#      build-mips.sh [ --? | -h | --help ]
-#                    [ --br2 "..." ]
-#                    [ --br2-version "..." ]
-#                    [ --br2-external "..." ]
-#                    [ --temp | --tmp "..." ]
-#                    [ --version ]
-#                    output-directory
+#      build.sh [ --? | -h | --help ]
+#               [ -a | --arch "..." ]
+#               [ --br2 "..." ]
+#               [ --br2-version "..." ]
+#               [ --br2-external "..." ]
+#               [ --temp | --tmp "..." ]
+#               [ --version ]
+#               output-directory
 #
 
 PROGRAM=$(basename "$0")
 VERSION=1.0
 
+ARCH=
 BR2PATH=
 BR2VERSION='2020.02'
 BR2EXTERNAL=
@@ -30,6 +32,7 @@ usage()
 Usage:
 	$PROGRAM 
 		 [ -h | --help | --? ]     Show help and exit
+		 [ -a | --arch ]           Platform to build system for (required!)
                  [ -j ]                    Number of cores to use during build (default: $(nproc))
 		 [ --br2 "..." ]           Path to custom buildroot tree (default: checkout)
 		 [ --br2-version "..." ]   Buildroot tag to checkout (default: $BR2VERSION)
@@ -82,6 +85,19 @@ done
 
 # Argument and flag option checks
 
+if [ -z "${ARCH}" ]; then
+    error "architecture option -a or --arch is required (supported archs: mips, arm)"
+elif [[ "${ARCH}" != "mips" ]] && [[ "${ARCH}" != "arm" ]]; then
+    error "unsupported architecture ${ARCH}, select arm or mips"
+fi  
+
+BR2_DEFCONFIG=
+if [[ "${ARCH}" == "mips" ]]; then
+    BR2_DEFCONFIG="qemu-mips32elr2-jsc_defconfig"
+else
+    BR2_DEFCONFIG="qemu-arm32-jsc_defconfig"
+fi
+
 if [ "$#" != "1" ]; then
     error "expected a single argument, got $#"
 fi
@@ -111,7 +127,7 @@ popd || error "cannot popd"
 
 pushd "${OUTPUT}" || error "cannot pushd"
 progress "configuring buildroot defconfig"
-if ! make O="${PWD}" -C "${TEMPPATH}/buildroot" BR2_EXTERNAL="${TEMPPATH}/jsc-br2-external" qemu-mips32elr2-jsc_defconfig &> "${TEMPPATH}/configure.log"; then
+if ! make O="${PWD}" -C "${TEMPPATH}/buildroot" BR2_EXTERNAL="${TEMPPATH}/jsc-br2-external" "${BR2_DEFCONFIG}" &> "${TEMPPATH}/configure.log"; then
     tail "${TEMPPATH}/configure.log"
     error "failed to configure buildroot"
 fi
