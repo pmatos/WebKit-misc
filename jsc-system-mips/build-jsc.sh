@@ -11,10 +11,9 @@
 PROGRAM=$(basename "$0")
 VERSION=1.0
 
-DATESTART=$(date +%s%N)
-
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+# shellcheck source=./common.sh
 source "${DIR}/common.sh"
 
 usage()
@@ -36,7 +35,7 @@ while test $# -gt 0
 do
     case $1 in
 	--version )
-	    version
+	    version "${PROGRAM}" "${VERSION}"
 	    exit 0
 	    ;;
 	--help | -h | '--?' )

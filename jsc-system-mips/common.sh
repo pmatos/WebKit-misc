@@ -1,5 +1,7 @@
 #! /bin/bash
 
+DATESTART=$(date +%s%N)
+
 progress()
 {
     local now
@@ -21,5 +23,9 @@ usage_and_exit()
 
 version()
 {
-    echo "$PROGRAM version $VERSION"
+    local p
+    local v
+    p="$1"
+    v="$2"
+    echo "$p version $v"
 }

@@ -14,8 +14,6 @@
 PROGRAM=$(basename "$0")
 VERSION=1.0
 
-DATESTART=$(date +%s%N)
-
 BR2PATH=
 BR2VERSION='2020.02'
 BR2EXTERNAL=
@@ -23,6 +21,7 @@ TEMPPATH=
 JLEVEL=$(nproc)
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+# shellcheck source=./common.sh
 source "${DIR}/common.sh"
 
 usage()
@@ -65,7 +64,7 @@ do
 	    JLEVEL="$1"
 	    ;;
 	--version )
-	    version
+	    version "${PROGRAM}" "${VERSION}"
 	    exit 0
 	    ;;
 	--help | -h | '--?' )
