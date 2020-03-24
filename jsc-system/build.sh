@@ -116,7 +116,7 @@ if ! mkdir "${OUTPUT}" &> /dev/null; then
     error "output path already exists: ${OUTPUT}"
 fi
 
-progress "Creating MIPS toolchain in ${OUTPUT}"
+progress "Creating toolchain in ${OUTPUT}"
 
 pushd "${TEMPPATH}" || error "cannot pushd"
 if [ -z "${BR2EXTERNAL}" ]; then

@@ -1,5 +1,5 @@
 #! /bin/bash
-# Builds a JSC for MIPS based on the buildroot toolchain
+# Builds a JSC based on the buildroot toolchain
 #
 # Usage:
 #      build-jsc.sh [ --? ]

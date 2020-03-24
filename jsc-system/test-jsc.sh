@@ -1,5 +1,5 @@
 #! /bin/bash
-# Runs JSC tests on MIPS using an external buildroot toolchain
+# Runs JSC tests using an external buildroot toolchain
 #
 # Usage:
 #      test-jsc.sh [ --? | -h | --help ]
@@ -30,7 +30,7 @@ Usage:
 		 [ --version ]             Show version and exit
 		 [ --timeout N ]           Set timeout per test (default: set by run-javascriptcore-tests)
 		 [ --release | --debug ]   JSC test mode (default: release)
-                 [ --vms N ]               Number of mips vms to start for testing
+                 [ --vms N ]               Number of vms to start for testing
 		 [ --filter REGEX ]        Filter for tests, passed unmodified to run-javascriptcore-tests
 		 [ --port P ]              Starting port for VMs (ports [P, P+N-1] need to be free
 		 webkit-directory          Directory with WebKit checkout
@@ -100,8 +100,8 @@ if [ "$#" != "2" ]; then
     error "expected two arguments, got $#"
 fi
 
-WEBKIT_PATH=$1
-BRPATH=$2
+WEBKIT_PATH=$(realpath "$1")
+BRPATH=$(realpath "$2")
 
 DFLAG="--release"
 if [[ ${DEBUG} == "1" ]]; then
@@ -128,10 +128,26 @@ fi
 TESTTMP_PATH="$(mktemp -d)"
 
 QEMUIMG_PATH="${BRPATH}/host/bin/qemu-img"
-QEMU_PATH="${BRPATH}/host/bin/qemu-system-mipsel"
+QEMU_PATH=$(find "${BRPATH}/host/bin/" -type f -name 'qemu-system-*')
+ARCH=${QEMU_PATH##*-} # trim everything until the last - (dash)
 HDD_PATH="${BRPATH}/images/rootfs.qcow2"
-KERNEL_PATH="${BRPATH}/images/vmlinux"
 REMOTES_PATH="$(mktemp)"
+
+if [[ "${ARCH}" != "arm" ]] && [[ "${ARCH}" != "mips" ]]; then
+    error "unrecognized arch: ${ARCH}"
+fi
+# set QEMU options
+QEMU_ARGS=
+if [[ "${ARCH}" == "arm" ]]; then
+    QEMU_ARGS=""
+elif [[ "${ARCH}" == "mips" ]]; then
+    QEMU_ARGS=""
+else
+    error "unrecognized arch: ${ARCH}"
+fi
+
+progress "Using emulator binary ${QEMU_PATH} for the ${ARCH} architecture"
+progress "arch specific qemu args: ${QEMU_ARGS}"
 
 declare -a IMAGES
 declare -a PORTS
@@ -168,18 +184,33 @@ setup_ports
 # Start qemu-system and store pids in PIDS array
 for i in $(seq 1 "${N}")
 do
-    $QEMU_PATH -M malta \
-	       -m 2G \
-	       -kernel "${KERNEL_PATH}" \
-	       -append "nokaslr root=/dev/hda" \
-	       -nographic \
-	       -net nic \
-	       -net user,hostfwd=tcp::${PORTS[${i}]}-:22 \
-	       -serial none \
-	       -monitor none \
-	       -drive format=qcow2,file="${IMAGES[${i}]}" &
+    if [[ "${ARCH}" == "arm" ]]; then
+	${QEMU_PATH} -M vexpress-a9 \
+		     -smp 4 \
+		     -m 1G \
+		     -kernel "${BRPATH}/images/zImage" \
+		     -dtb "${BRPATH}/images/vexpress-v2p-ca9.dtb" \
+		     -append "console=ttyAMA0,115200 rootwait root=/dev/mmcblk0" \
+		     -net nic,model=lan9118 \
+		     -nographic \
+		     -serial none \
+		     -monitor none \
+		     -net user,hostfwd=tcp::${PORTS[${i}]}-:22 \
+		     -drive format=qcow2,if=sd,file="${IMAGES[${i}]}" &
+    elif [[ "${ARCH}" == "mips" ]]; then
+	${QEMU_PATH} -M malta \
+		     -m 1G \
+		     -kernel "${BRPATH}/images/vmlinux" \
+		     -append "nokaslr root=/dev/hda" \
+		     -net nic \
+		     -nographic \
+		     -serial none \
+		     -monitor none \
+		     -net user,hostfwd=tcp::${PORTS[${i}]}-:22 \
+		     -drive format=qcow2,file="${IMAGES[${i}]}" &
+    fi
     PIDS[${i}]=$!
-    progress "Starting virtual mips machine with pid ${PIDS[${i}]} listening to ssh on port ${PORTS[${i}]}"
+    progress "Starting virtual machine with pid ${PIDS[${i}]} listening to ssh on port ${PORTS[${i}]}"
 done
 
 # Wait until we can communicate with the machines
