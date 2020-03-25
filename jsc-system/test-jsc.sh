@@ -110,7 +110,7 @@ fi
 
 FFLAG=""
 if [[ -n "${FILTER}" ]]; then
-    FFLAG=--filter ${FILTER}
+    FFLAG="--filter ${FILTER}"
 fi
 
 # Tests a JSC installation using qemu-system
@@ -261,7 +261,7 @@ progress "running tests with output redirected to stdout"
 if [ -n "${TIMEOUT}" ]; then
     export JSCTEST_timeout="${TIMEOUT}"
 fi
-"${WEBKIT_PATH}"/Tools/Scripts/run-javascriptcore-tests --no-build --no-fail-fast "${DFLAG}" --memory-limited --remote-config-file "${REMOTES_PATH}" --no-testmasm --no-testair --no-testb3 --no-testdfg --no-testapi --jsc-only "${FFLAG}" 2>&1
+"${WEBKIT_PATH}"/Tools/Scripts/run-javascriptcore-tests --no-build --no-fail-fast "${DFLAG}" --memory-limited --remote-config-file "${REMOTES_PATH}" --no-testmasm --no-testair --no-testb3 --no-testdfg --no-testapi --jsc-only ${FFLAG} 2>&1
 
 # Killall qemu systems and clean up HDDs
 for i in $(seq 1 "${N}"); do
