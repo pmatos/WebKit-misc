@@ -110,7 +110,7 @@ fi
 
 FFLAG=""
 if [[ -n "${FILTER}" ]]; then
-    FFLAG="--filter ${FILTER}"
+    FFLAG=--filter ${FILTER}
 fi
 
 # Tests a JSC installation using qemu-system
