@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'jsc-system/**'
+      - '.github/workflows/jsc-system-docker-image-build.yml'
       
 jobs:
   build-image-arm:
