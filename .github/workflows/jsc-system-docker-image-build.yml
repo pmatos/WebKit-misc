@@ -6,7 +6,8 @@ on:
       - 'jsc-system/**'
       - '.github/workflows/jsc-system-docker-image-build.yml'
       
-jobs:
+
+      jobs:
   build-image-arm:
     runs-on: self-hosted
 
