@@ -9,7 +9,7 @@ ENV FORCE_UNSAFE_CONFIGURE=1
 RUN apt-get update && \
 	apt-get upgrade -y && \
 	apt-get install -y make gcc g++ build-essential perl rsync unzip wget git file cpio bc python && \
-	./build.sh -a $ARCH /buildroot 
+	./build.sh -j $(nproc) -a $ARCH /buildroot 
 
 FROM debian:buster-slim
 LABEL maintainer="pmatos@linki.tools"
