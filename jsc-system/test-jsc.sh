@@ -136,15 +136,6 @@ REMOTES_PATH="$(mktemp)"
 if [[ "${ARCH}" != "arm" ]] && [[ "${ARCH}" != "mips" ]]; then
     error "unrecognized arch: ${ARCH}"
 fi
-# set QEMU options
-QEMU_ARGS=
-if [[ "${ARCH}" == "arm" ]]; then
-    QEMU_ARGS=""
-elif [[ "${ARCH}" == "mips" ]]; then
-    QEMU_ARGS=""
-else
-    error "unrecognized arch: ${ARCH}"
-fi
 
 progress "Using emulator binary ${QEMU_PATH} for the ${ARCH} architecture"
 progress "arch specific qemu args: ${QEMU_ARGS}"
