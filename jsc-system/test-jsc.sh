@@ -133,12 +133,11 @@ ARCH=${QEMU_PATH##*-} # trim everything until the last - (dash)
 HDD_PATH="${BRPATH}/images/rootfs.qcow2"
 REMOTES_PATH="$(mktemp)"
 
-if [[ "${ARCH}" != "arm" ]] && [[ "${ARCH}" != "mips" ]]; then
+if [[ "${ARCH}" != "arm" ]] && [[ "${ARCH}" != "mipsel" ]]; then
     error "unrecognized arch: ${ARCH}"
 fi
 
 progress "Using emulator binary ${QEMU_PATH} for the ${ARCH} architecture"
-progress "arch specific qemu args: ${QEMU_ARGS}"
 
 declare -a IMAGES
 declare -a PORTS
@@ -188,7 +187,7 @@ do
 		     -monitor none \
 		     -net user,hostfwd=tcp::${PORTS[${i}]}-:22 \
 		     -drive format=qcow2,if=sd,file="${IMAGES[${i}]}" &
-    elif [[ "${ARCH}" == "mips" ]]; then
+    elif [[ "${ARCH}" == "mipsel" ]]; then
 	${QEMU_PATH} -M malta \
 		     -m 1G \
 		     -kernel "${BRPATH}/images/vmlinux" \
