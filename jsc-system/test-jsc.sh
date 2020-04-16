@@ -29,7 +29,7 @@ Usage:
 		 [ -h | --help | --? ]     Show help and exit
 		 [ --version ]             Show version and exit
 		 [ --timeout N ]           Set timeout per test (default: set by run-javascriptcore-tests)
-		 [ --release | --debug ]   JSC test mode (default: release)
+		 [ --release | --debug | --ra ]   JSC test mode (default: release)
                  [ --vms N ]               Number of vms to start for testing
 		 [ --filter REGEX ]        Filter for tests, passed unmodified to run-javascriptcore-tests
 		 [ --port P ]              Starting port for VMs (ports [P, P+N-1] need to be free
@@ -41,7 +41,7 @@ EOF
 TIMEOUT=
 N=
 P=
-DEBUG=0
+MODEFLAG=
 FILTER=
 
 while test $# -gt 0
@@ -59,10 +59,22 @@ do
 	    TIMEOUT=$1
 	    ;;
 	--release )
-	    DEBUG=0
+	    if [ -n "$MODEFLAG" ]; then
+		error "only one of --release, --debug, --ra allows"
+	    fi
+	    MODEFLAG=--release
 	    ;;
 	--debug )
-	    DEBUG=1
+	    if [ -n "$MODEFLAG" ]; then
+		error "only one of --release, --debug, --ra allows"
+	    fi
+	    MODEFLAG=--debug
+	    ;;
+	--ra )
+	    if [ -n "$MODEFLAG" ]; then
+		error "only one of --release, --debug, --ra allows"
+	    fi
+	    MODEFLAG=--ra
 	    ;;
 	--vms )
 	    shift
@@ -102,11 +114,6 @@ fi
 
 WEBKIT_PATH=$(realpath "$1")
 BRPATH=$(realpath "$2")
-
-DFLAG="--release"
-if [[ ${DEBUG} == "1" ]]; then
-    DFLAG="--debug"
-fi
 
 FFLAG=()
 if [[ -n "${FILTER}" ]]; then
@@ -251,7 +258,7 @@ progress "running tests with output redirected to stdout"
 if [ -n "${TIMEOUT}" ]; then
     export JSCTEST_timeout="${TIMEOUT}"
 fi
-"${WEBKIT_PATH}"/Tools/Scripts/run-javascriptcore-tests --no-build --no-fail-fast "${DFLAG}" --memory-limited --remote-config-file "${REMOTES_PATH}" --no-testmasm --no-testair --no-testb3 --no-testdfg --no-testapi --jsc-only "${FFLAG[@]}" 2>&1
+"${WEBKIT_PATH}"/Tools/Scripts/run-javascriptcore-tests --no-build --no-fail-fast "${MODEFLAG}" --memory-limited --remote-config-file "${REMOTES_PATH}" --no-testmasm --no-testair --no-testb3 --no-testdfg --no-testapi --jsc-only "${FFLAG[@]}" 2>&1
 
 # Killall qemu systems and clean up HDDs
 for i in $(seq 1 "${N}"); do

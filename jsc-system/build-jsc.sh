@@ -21,15 +21,15 @@ usage()
     cat <<EOF
 Usage:
 	$PROGRAM 
-		 [ -h | --help | --? ]     Show help and exit
-		 [ --version ]             Show version and exit
-		 [ --release | --debug ]   JSC Build mode (default: release)
-		 webkit-directory          Directory with WebKit checkout
-		 buildroot-directory       Directory with Buildroot install
+		 [ -h | --help | --? ]            Show help and exit
+		 [ --version ]                    Show version and exit
+		 [ --release | --debug | --ra ]   JSC Build mode (default: release)
+		 webkit-directory                 Directory with WebKit checkout
+		 buildroot-directory              Directory with Buildroot install
 EOF
 }
 
-DEBUG=0
+MODEFLAG=
 
 while test $# -gt 0
 do
@@ -42,10 +42,22 @@ do
 	    usage_and_exit 0
 	    ;;
 	--release )
-	    DEBUG=0
+	    if [ -n "$MODEFLAG" ]; then
+		error "only one of --release, --debug, --ra allows"
+	    fi
+	    MODEFLAG=--release
 	    ;;
 	--debug )
-	    DEBUG=1
+	    if [ -n "$MODEFLAG" ]; then
+		error "only one of --release, --debug, --ra allows"
+	    fi
+	    MODEFLAG=--debug
+	    ;;
+	--ra )
+	    if [ -n "$MODEFLAG" ]; then
+		error "only one of --release, --debug, --ra allows"
+	    fi
+	    MODEFLAG=--ra
 	    ;;
 	-*)
 	    error "Unrecognized option: $1"
@@ -80,16 +92,11 @@ if [ -d "${WEBKIT_PATH}/WebKitBuild" ]; then
     exit 1
 fi
 
-DFLAG="--release"
-if [[ ${DEBUG} == "1" ]]; then
-    DFLAG="--debug"
-fi
-
 pushd "${WEBKIT_PATH}" || error "push failure"
 
 TMPLOG=$(mktemp)
 progress "building jsc"
-if ! Tools/Scripts/build-jsc "${DFLAG}" --jsc-only --cmakeargs="-DCMAKE_TOOLCHAIN_FILE=${BRPATH}/host/share/buildroot/toolchainfile.cmake -DENABLE_STATIC_JSC=ON" &> "${TMPLOG}"; then
+if ! Tools/Scripts/build-jsc "${MODEFLAG}" --jsc-only --cmakeargs="-DCMAKE_TOOLCHAIN_FILE=${BRPATH}/host/share/buildroot/toolchainfile.cmake -DENABLE_STATIC_JSC=ON" &> "${TMPLOG}"; then
     progress "failed to build JSC, log tail is:"
     tail "${TMPLOG}"
     error "full log can be found at: ${TMPLOG}"
