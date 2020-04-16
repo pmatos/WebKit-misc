@@ -231,6 +231,9 @@ for i in $(seq 1 "$N"); do
     done
 
     if [[ $retries == 0 ]]; then
+	for k in $(seq 1 "$N"); do
+	    kill ${PIDS[${k}]}
+	done
 	error "can't reach machine $i"
     fi
 done
