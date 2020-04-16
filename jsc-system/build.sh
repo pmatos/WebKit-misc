@@ -111,8 +111,8 @@ if [ -z "${TEMPPATH}" ]; then
 fi
 
 # Receives one argument, the destination directory for the build
-OUTPUT=$(realpath "$1")
-if ! mkdir "${OUTPUT}" &> /dev/null; then
+OUTPUT=$(realpath -m "$1")
+if ! mkdir -p "${OUTPUT}" &> /dev/null; then
     error "output path already exists: ${OUTPUT}"
 fi
 
