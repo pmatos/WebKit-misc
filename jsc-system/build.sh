@@ -8,6 +8,7 @@
 #               [ --br2-version "..." ]
 #               [ --br2-external "..." ]
 #               [ --temp | --tmp "..." ]
+#               [ --sdk ]
 #               [ --version ]
 #               output-directory
 #
@@ -22,6 +23,7 @@ BR2EXTERNAL=
 TEMPPATH=
 JLEVEL=$(nproc)
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+SDK=0
 
 # shellcheck source=./common.sh
 source "${DIR}/common.sh"
@@ -38,6 +40,7 @@ Usage:
 		 [ --br2-version "..." ]   Buildroot tag to checkout (default: $BR2VERSION)
 		 [ --br2-external "..." ]  Path to custom buildroot JSC external tree (default: checkout)
 		 [ --temp | --tmp "..." ]  Path to custom temporary directory (default: create)
+                 [ --sdk ]                 Generate SDK file
 		 [ --version ]             Show version and exit
 		 output-directory          Directory to install buildroot to
 EOF
@@ -69,6 +72,10 @@ do
 	-j )
 	    shift
 	    JLEVEL="$1"
+	    ;;
+	--sdk )
+	    shift
+	    SDK=1
 	    ;;
 	--version )
 	    version "${PROGRAM}" "${VERSION}"
@@ -148,6 +155,10 @@ if ! host/bin/qemu-img convert -q -O qcow2 images/rootfs.ext2 images/rootfs.qcow
     error "Failed to convert image"
 fi
 popd || error "cannot popd"
+
+if [[ "${SDK}" == "1" ]]; then
+    make sdk
+fi
 
 progress "Cleaning up temporary folder ${TEMPPATH}"
 rm -Rf "${TEMPPATH}"
