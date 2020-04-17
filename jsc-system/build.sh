@@ -74,7 +74,6 @@ do
 	    JLEVEL="$1"
 	    ;;
 	--sdk )
-	    shift
 	    SDK=1
 	    ;;
 	--version )
