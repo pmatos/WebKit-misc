@@ -4,6 +4,7 @@
 # Usage:
 #      build.sh [ --? | -h | --help ]
 #               [ -a | --arch "..." ]
+#               [ -k ]
 #               [ --br2 "..." ]
 #               [ --br2-version "..." ]
 #               [ --br2-external "..." ]
@@ -24,6 +25,7 @@ TEMPPATH=
 JLEVEL=$(nproc)
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 SDK=0
+KEEP=0
 
 # shellcheck source=./common.sh
 source "${DIR}/common.sh"
@@ -36,6 +38,7 @@ Usage:
 		 [ -h | --help | --? ]     Show help and exit
 		 [ -a | --arch ]           Platform to build system for (required!)
                  [ -j ]                    Number of cores to use during build (default: $(nproc))
+                 [ -k ]                    Keep temporary files
 		 [ --br2 "..." ]           Path to custom buildroot tree (default: checkout)
 		 [ --br2-version "..." ]   Buildroot tag to checkout (default: $BR2VERSION)
 		 [ --br2-external "..." ]  Path to custom buildroot JSC external tree (default: checkout)
@@ -75,6 +78,9 @@ do
 	    ;;
 	--sdk )
 	    SDK=1
+	    ;;
+	-k )
+	    KEEP=1
 	    ;;
 	--version )
 	    version "${PROGRAM}" "${VERSION}"
@@ -156,9 +162,18 @@ fi
 popd || error "cannot popd"
 
 if [[ "${SDK}" == "1" ]]; then
-    make sdk
+    progress "building sdk"
+    if ! make BR2_JLEVEL="${JLEVEL}" sdk &> "${TEMPPATH}/sdk.log"; then
+	tail "${TEMPPATH}/sdk.log"
+	error "failed to build sdk"
+    fi
 fi
 
-progress "Cleaning up temporary folder ${TEMPPATH}"
-rm -Rf "${TEMPPATH}"
+
+if [[ "${KEEP}" == "1" ]]; then
+    progress "Keeping temporary files in ${TEMPPATH}"
+else
+    progress "Cleaning up temporary folder ${TEMPPATH}"
+    rm -Rf "${TEMPPATH}"
+fi
 
