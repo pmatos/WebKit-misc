@@ -103,7 +103,14 @@ done
 
 if [ -z "${ARCH}" ]; then
     error "architecture option -a or --arch is required (supported archs: mips, arm)"
-elif [[ "${ARCH}" != "mips" ]] && [[ "${ARCH}" != "arm" ]]; then
+fi
+
+# Also accept mipsel for mips
+if [[ "${ARCH}" == "mipsel" ]]; then
+    ARCH="mips"
+fi
+
+if [[ "${ARCH}" != "mips" ]] && [[ "${ARCH}" != "arm" ]]; then
     error "unsupported architecture ${ARCH}, select arm or mips"
 fi  
 
