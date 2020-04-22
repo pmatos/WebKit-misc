@@ -17,6 +17,13 @@ FROM debian:buster-slim
 LABEL maintainer="pmatos@linki.tools"
 LABEL description="Debian Buster Slim image with a buildroot qemu-based system for ARM32/MIPS32 emulation"
 
-COPY --from=BUILDER /buildroot /
+COPY --from=BUILDER /buildroot/images/sdk.tar.gz /
+
+RUN mkdir /buildroot 
+RUN tar xzf /sdk.tar.gz -C /buildroot--strip-components=1 
+RUN /buildroot/relocate-sdk.sh 
+RUN rm /sdk.tar.gz
+
+ENV PATH=/buildroot/bin:$PATH
 
 CMD ["bash"]
