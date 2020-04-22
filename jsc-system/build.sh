@@ -166,7 +166,6 @@ progress "Converting raw image to qcow2"
 if ! host/bin/qemu-img convert -q -O qcow2 images/rootfs.ext2 images/rootfs.qcow2; then
     error "Failed to convert image"
 fi
-popd || error "cannot popd"
 
 if [[ "${SDK}" == "1" ]]; then
     progress "building sdk"
@@ -185,6 +184,7 @@ if [[ "${SDK}" == "1" ]]; then
 	error "cannot find SDK image"
     fi
 fi
+popd || error "cannot popd"
 
 
 if [[ "${KEEP}" == "1" ]]; then
