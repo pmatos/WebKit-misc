@@ -174,6 +174,14 @@ if [[ "${SDK}" == "1" ]]; then
 	tail "${TEMPPATH}/sdk.log"
 	error "failed to build sdk"
     fi
+
+    if [[ "${ARCH}" == "mips" ]] && [[ -f "images/mipsel-buildroot-linux-gnu_sdk-buildroot.tar.gz" ]]; then
+	progress "SDK image in: images/mipsel-buildroot-linux-gnu_sdk-buildroot.tar.gz"
+    elif [[ "${ARCH}" == "arm" ]] && [[ -f "images/arm-buildroot-linux-gnueabihf_sdk-buildroot.tar.gz" ]]; then
+	progress "SDK image in: images/arm-buildroot-linux-gnueabihf_sdk-buildroot.tar.gz"
+    else
+	error "cannot find SDK image"
+    fi
 fi
 
 
