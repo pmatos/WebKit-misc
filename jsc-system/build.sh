@@ -177,8 +177,10 @@ if [[ "${SDK}" == "1" ]]; then
 
     if [[ "${ARCH}" == "mips" ]] && [[ -f "images/mipsel-buildroot-linux-gnu_sdk-buildroot.tar.gz" ]]; then
 	progress "SDK image in: images/mipsel-buildroot-linux-gnu_sdk-buildroot.tar.gz"
+	ln images/mipsel-buildroot-linux-gnu_sdk-buildroot.tar.gz images/sdk.tar.gz
     elif [[ "${ARCH}" == "arm" ]] && [[ -f "images/arm-buildroot-linux-gnueabihf_sdk-buildroot.tar.gz" ]]; then
 	progress "SDK image in: images/arm-buildroot-linux-gnueabihf_sdk-buildroot.tar.gz"
+	ln images/images/arm-buildroot-linux-gnueabihf_sdk-buildroot.tar.gz images/sdk.tar.gz
     else
 	error "cannot find SDK image"
     fi
