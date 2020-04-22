@@ -1,6 +1,5 @@
 FROM debian:buster-slim as BUILDER
 
-ARG ARCH
 COPY build.sh .
 COPY common.sh .
 
@@ -9,6 +8,8 @@ ENV FORCE_UNSAFE_CONFIGURE=1
 RUN apt-get update 
 RUN apt-get upgrade -y
 RUN apt-get install -y make gcc g++ build-essential perl rsync unzip wget git file cpio bc python
+
+ARG ARCH
 RUN ./build.sh -j $(nproc) -a $ARCH --sdk /buildroot
 
 WORKDIR /buildroot
