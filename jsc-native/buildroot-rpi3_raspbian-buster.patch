@@ -1,0 +1,112 @@
+diff --git a/package/glibc/2.28-133-g6578d89c170cc7b524b9bccafffd5b4207bf646f/glibc.hash b/package/glibc/2.28-133-g6578d89c170cc7b524b9bccafffd5b4207bf646f/glibc.hash
+new file mode 100644
+index 0000000000..215222ba96
+--- /dev/null
++++ b/package/glibc/2.28-133-g6578d89c170cc7b524b9bccafffd5b4207bf646f/glibc.hash
+@@ -0,0 +1,6 @@
++sha256 8cb918cef45112554dd5efdbe4e3d4bb2909708a2b115a3b612b22bd7c670859 glibc-2.28-133-g6578d89c170cc7b524b9bccafffd5b4207bf646f.tar.gz
++
++# Hashes for license files
++sha256  8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643  COPYING
++sha256  dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551  COPYING.LIB
++sha256  35bdb41dc0bcb10702ddacbd51ec4c0fe6fb3129f734e8c85fc02e4d3eb0ce3f  LICENSES
+\ No newline at end of file
+diff --git a/package/glibc/glibc.mk b/package/glibc/glibc.mk
+index 2ca73343b3..5caa65dc99 100644
+--- a/package/glibc/glibc.mk
++++ b/package/glibc/glibc.mk
+@@ -17,7 +17,7 @@ else
+ # Generate version string using:
+ #   git describe --match 'glibc-*' --abbrev=40 origin/release/MAJOR.MINOR/master | cut -d '-' -f 2-
+ # When updating the version, please also update localedef
+-GLIBC_VERSION = 2.30-20-g50f20fe506abb8853641006a7b90a81af21d7b91
++GLIBC_VERSION = 2.28-133-g6578d89c170cc7b524b9bccafffd5b4207bf646f
+ # Upstream doesn't officially provide an https download link.
+ # There is one (https://sourceware.org/git/glibc.git) but it's not reliable,
+ # sometimes the connection times out. So use an unofficial github mirror.
+diff --git a/package/icu/0007-double-conversion-enable-for-microblaze.patch b/package/icu/0007-double-conversion-enable-for-microblaze.patch
+deleted file mode 100644
+index 278c6c61ea..0000000000
+--- a/package/icu/0007-double-conversion-enable-for-microblaze.patch
++++ /dev/null
+@@ -1,25 +0,0 @@
+-From 395f063b6af8885cc9d688eeeb44acf9d75c6045 Mon Sep 17 00:00:00 2001
+-From: Peter Seiderer <ps.report@gmx.net>
+-Date: Thu, 3 Oct 2019 16:31:22 +0200
+-Subject: [PATCH] double-conversion: enable for microblaze
+-
+-Signed-off-by: Peter Seiderer <ps.report@gmx.net>
+----
+- source/i18n/double-conversion-utils.h | 1 +
+- 1 file changed, 1 insertion(+)
+-
+-diff --git a/source/i18n/double-conversion-utils.h b/source/i18n/double-conversion-utils.h
+-index 0cf9939..a00037e 100644
+---- a/source/i18n/double-conversion-utils.h
+-+++ b/source/i18n/double-conversion-utils.h
+-@@ -104,6 +104,7 @@ int main(int argc, char** argv) {
+-     defined(__AARCH64EL__) || defined(__aarch64__) || defined(__AARCH64EB__) || \
+-     defined(__riscv) || \
+-     defined(__or1k__) || defined(__arc__) || \
+-+    defined(__microblaze__) || \
+-     defined(__EMSCRIPTEN__)
+- #define DOUBLE_CONVERSION_CORRECT_DOUBLE_OPERATIONS 1
+- #elif defined(__mc68000__) || \
+---
+-2.23.0
+-
+diff --git a/package/icu/0008-double-conversion-enable-for-xtensa.patch b/package/icu/0008-double-conversion-enable-for-xtensa.patch
+deleted file mode 100644
+index cb6be5188b..0000000000
+--- a/package/icu/0008-double-conversion-enable-for-xtensa.patch
++++ /dev/null
+@@ -1,26 +0,0 @@
+-From f8f37357fa7cc403848d2bafe6152a707ca3a074 Mon Sep 17 00:00:00 2001
+-From: Peter Seiderer <ps.report@gmx.net>
+-Date: Mon, 28 Oct 2019 21:26:05 +0100
+-Subject: [PATCH] double-conversion: enable for xtensa
+-
+-Signed-off-by: Peter Seiderer <ps.report@gmx.net>
+----
+- source/i18n/double-conversion-utils.h | 2 +-
+- 1 file changed, 1 insertion(+), 1 deletion(-)
+-
+-diff --git a/source/i18n/double-conversion-utils.h b/source/i18n/double-conversion-utils.h
+-index a00037e..b3100ac 100644
+---- a/source/i18n/double-conversion-utils.h
+-+++ b/source/i18n/double-conversion-utils.h
+-@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
+-     defined(__AARCH64EL__) || defined(__aarch64__) || defined(__AARCH64EB__) || \
+-     defined(__riscv) || \
+-     defined(__or1k__) || defined(__arc__) || \
+--    defined(__microblaze__) || \
+-+    defined(__microblaze__) || defined(__XTENSA__) || \
+-     defined(__EMSCRIPTEN__)
+- #define DOUBLE_CONVERSION_CORRECT_DOUBLE_OPERATIONS 1
+- #elif defined(__mc68000__) || \
+---
+-2.23.0
+-
+diff --git a/package/icu/icu.hash b/package/icu/icu.hash
+index 5eb508d2cb..7e9edba079 100644
+--- a/package/icu/icu.hash
++++ b/package/icu/icu.hash
+@@ -1,4 +1,5 @@
+ # From https://github.com/unicode-org/icu/releases/download/release-65-1/SHASUM512.txt
+ sha512 8f1ef33e1f4abc9a8ee870331c59f01b473d6da1251a19ce403f822f3e3871096f0791855d39c8f20c612fc49cda2c62c06864aa32ddab2dbd186d2b21ce9139  icu4c-65_1-src.tgz
++sha512 5fa9092efd8d6da6dfc8d498e4026167fda43423eaafc754d1789cf8fd4f6e76377878ebcaa32e14f314836136b764873511a93bfbcc5419b758841cc6df8f32  icu4c-63_2-src.tgz
+ # Locally computed
+ sha256 6a18c5fac70d7860b57f5b72b4e2c9a1ba6b3d2741eef7ff9767c5379364f10d  LICENSE
+diff --git a/package/icu/icu.mk b/package/icu/icu.mk
+index 0b8aeeaee1..56da32ceec 100644
+--- a/package/icu/icu.mk
++++ b/package/icu/icu.mk
+@@ -7,7 +7,7 @@
+ # Git tags (and therefore versions on release-monitoring.org) use the
+ # XX-Y format, but the tarballs are named XX_Y and the containing
+ # directories XX.Y.
+-ICU_VERSION = 65-1
++ICU_VERSION = 63-2
+ ICU_SOURCE = icu4c-$(subst -,_,$(ICU_VERSION))-src.tgz
+ ICU_SITE = \
+ 	https://github.com/unicode-org/icu/releases/download/release-$(ICU_VERSION)
