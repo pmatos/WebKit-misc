@@ -6,8 +6,8 @@ on: [push]
 
 jobs:
   scan:
-    runs-on: ubuntu-latest
-    container: ubuntu:18.04
+    runs-on: [self-hosted]
+    container: pmatos/scan-build:latest
     
     steps:
       - name: Checkout
@@ -17,7 +17,7 @@ jobs:
       - name: Scan
         run: ./scan-build-webkit.sh $GITHUB_WORKSPACE/results
       - name: Archive results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: scan-results
           path: ${{ github.workspace }}/results
