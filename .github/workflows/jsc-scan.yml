@@ -6,7 +6,7 @@ on: [push]
 
 jobs:
   scan:
-    runs-on: [self-hosted]
+    runs-on: ubuntu-latest
     container: pmatos/scan-build:latest
     
     steps:
