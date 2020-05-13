@@ -83,3 +83,26 @@ For example:
 $ ./test-jsc.sh --vms 16 --port 61000 ${HOME}/dev/WebKit ${INSTALL}
 ```
 
+## Using docker to cross-compile JSC
+
+It is not very simple to use Buildroot on macOS. Given that macOS is one of the main JSC development environment, docker images are available with toolchain already installed to be used on those environments. The ARMv7 container is available on `pmatos/jsc-qemu-system-arm32`, while the MIPS container is on `pmatos/jsc-qemu-system-mips32el`.
+Following command lines are considering the ARMv7 container, but MIPS version follows same steps. 
+
+To run a container we use the following command:
+
+```
+docker run -v <path to webkit on host machine>:/root/webkit -v <path to webkit-misc>/WebKit-misc/:/root/webkit-misc -ti pmatos/jsc-qemu-system-arm32 /bin/bash
+```
+
+It is important to notice the `-v <path to webkit on host machine>:/root/webkit` option. This will create a shared volume between host and guest container, so it is not necessary to checkout WebKit repository inside the container.
+We also share `WebKit-misc`, since it is where build scripts are located.
+
+The command `docker run` will download the image and then launch a container executing `/bin/bash`. At this point we need to chage directory to `/root/webkit-misc/jsc-system` and run `build-jsc` script.
+
+```
+cd /root/webkit-misc/jsc-system
+./build-jsc.sh /root/webkit/ /buildroot
+```
+
+The build time varies with the resource used by guest VM. After this command finishes, the binary is available on `<path to webkit>/WebKitBuild`.
+
