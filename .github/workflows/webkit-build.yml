@@ -52,7 +52,7 @@ jobs:
         static: [static, no-static]
         mode: [ra, debug, release]
 
-    container: ubuntu-20.04
+    container: ubuntu:20.04
           
     steps:
       - name: Install git and deps
