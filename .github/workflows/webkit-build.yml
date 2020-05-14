@@ -23,7 +23,7 @@ jobs:
       - name: Install git
         run: |
           apt-get update
-          apt-get install -y build-essential git
+          apt-get install -y build-essential git curl
       - name: Checkout WebKit
         run: git clone --depth=1 https://git.webkit.org/git/WebKit-https.git WebKit
       - name: Set static
