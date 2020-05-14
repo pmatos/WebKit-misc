@@ -2,7 +2,7 @@ name: Build JSC32
 
 on:
   schedule:
-    cron: '0 */2 * * *'
+    - cron: '0 */2 * * *'
       
 jobs:
   build:    
