@@ -25,7 +25,7 @@ jobs:
           apt-get update
           apt-get install -y build-essential git curl openssl
       - name: Checkout WebKit
-        run: git clone --depth=1 https://git.webkit.org/git/WebKit-https.git WebKit
+        run: git clone --depth=1 https://github.com/webkit/webkit
       - name: Set static
         if: matrix.static == 'static'
         run: echo "::set-env name=static::ON"
