@@ -36,7 +36,7 @@ jobs:
         if: matrix.unified == 'unified'
         run: echo "::set-env name=unified::ON"
       - name: Set no-unified
-        if: matrix.static == 'no-unified'
+        if: matrix.unified == 'no-unified'
         run: echo "::set-env name=unified::OFF"
       - name: Build
         working-directory: /webkit
