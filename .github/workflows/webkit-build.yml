@@ -1,6 +1,8 @@
 name: Build JSC32
 
-on: push
+on:
+  schedule:
+    cron: '0 */2 * * *'
       
 jobs:
   build:    
