@@ -25,7 +25,7 @@ jobs:
           apt-get update
           apt-get install -y build-essential git curl openssl
       - name: Checkout WebKit
-        run: git clone --depth=1 https://github.com/webkit/webkit
+        run: git clone --depth=1 https://github.com/webkit/webkit /webkit
       - name: Set static
         if: matrix.static == 'static'
         run: echo "::set-env name=static::ON"
@@ -37,8 +37,8 @@ jobs:
         run: echo "::set-env name=unified::ON"
       - name: Set no-unified
         if: matrix.static == 'no-unified'
-        run: echo "::set-env name=unified::OFF"        
+        run: echo "::set-env name=unified::OFF"
       - name: Build
-        working-directory: ./WebKit
+        working-directory: /webkit
         run: Tools/Scripts/build-jsc --${{ matrix.mode }} --jsc-only --cmakeargs="-DCMAKE_TOOLCHAIN_FILE=/buildroot/share/buildroot/toolchainfile.cmake -DENABLE_STATIC_JSC=${static} -DENABLE_UNIFIED_BUILDS=${unified}"
       
