@@ -10,8 +10,9 @@ jobs:
       fail-fast: false
       matrix:
         arch: [arm32, mips32el]
-        unified: [ON, OFF]
-        static: [ON, OFF]
+        unified: [unified, no-unified]
+        static: [static, no-static]
+        mode: [ra, debug, release]
 
     container: pmatos/jsc-qemu-system-${{ matrix.arch }}
           
@@ -22,7 +23,19 @@ jobs:
           apt-get install -y build-essential git
       - name: Checkout WebKit
         run: git clone --depth=1 https://git.webkit.org/git/WebKit-https.git WebKit
+      - name: Set static
+        if: matrix.static == 'static'
+        run: echo "::set-env name=static::ON"
+      - name: Set no-static
+        if: matrix.static == 'no-static'
+        run: echo "::set-env name=static::OFF"
+      - name: Set unified
+        if: matrix.unified == 'unified'
+        run: echo "::set-env name=unified::ON"
+      - name: Set no-unified
+        if: matrix.static == 'no-unified'
+        run: echo "::set-env name=unified::OFF"        
       - name: Build
         working-directory: ./WebKit
-        run: Tools/Scripts/build-jsc --ra --jsc-only --cmakeargs="-DCMAKE_TOOLCHAIN_FILE=/buildroot/share/buildroot/toolchainfile.cmake -DENABLE_STATIC_JSC=${{ matrix.static }} -DENABLE_UNIFIED_BUILDS=${{ matrix.unified }}"
+        run: Tools/Scripts/build-jsc --${{ matrix.mode }} --jsc-only --cmakeargs="-DCMAKE_TOOLCHAIN_FILE=/buildroot/share/buildroot/toolchainfile.cmake -DENABLE_STATIC_JSC=${static} -DENABLE_UNIFIED_BUILDS=${unified}"
       
