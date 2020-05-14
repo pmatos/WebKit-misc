@@ -6,7 +6,7 @@ on: push
   #  - cron: '0 */2 * * *'
       
 jobs:
-  build:    
+  build-32bits:
     runs-on: ubuntu-18.04
 
     strategy:
@@ -41,4 +41,39 @@ jobs:
       - name: Build
         working-directory: /webkit
         run: Tools/Scripts/build-jsc --${{ matrix.mode }} --jsc-only --cmakeargs="-DCMAKE_TOOLCHAIN_FILE=/buildroot/share/buildroot/toolchainfile.cmake -DENABLE_STATIC_JSC=${static} -DENABLE_UNIFIED_BUILDS=${unified}"
+      
+  build-64bits:
+    runs-on: ubuntu-18.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        unified: [unified, no-unified]
+        static: [static, no-static]
+        mode: [ra, debug, release]
+
+    container: ubuntu-20.04
+          
+    steps:
+      - name: Install git and deps
+        run: |
+          apt-get update
+          apt-get install -y build-essential git curl openssl
+      - name: Checkout WebKit
+        run: git clone --depth=1 https://github.com/webkit/webkit /webkit
+      - name: Set static
+        if: matrix.static == 'static'
+        run: echo "::set-env name=static::ON"
+      - name: Set no-static
+        if: matrix.static == 'no-static'
+        run: echo "::set-env name=static::OFF"
+      - name: Set unified
+        if: matrix.unified == 'unified'
+        run: echo "::set-env name=unified::ON"
+      - name: Set no-unified
+        if: matrix.unified == 'no-unified'
+        run: echo "::set-env name=unified::OFF"
+      - name: Build
+        working-directory: /webkit
+        run: Tools/Scripts/build-jsc --${{ matrix.mode }} --jsc-only --cmakeargs="-DENABLE_STATIC_JSC=${static} -DENABLE_UNIFIED_BUILDS=${unified}"
       
