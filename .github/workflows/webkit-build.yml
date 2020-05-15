@@ -57,7 +57,7 @@ jobs:
     container: ubuntu:20.04
 
     env:
-      DEBIAN_FRONTEND=noninteractive
+      DEBIAN_FRONTEND: noninteractive
     
     steps:
       - name: Install git and deps
