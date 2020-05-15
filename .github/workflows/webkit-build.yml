@@ -1,6 +1,9 @@
 name: Build JSC32
 
 on:
+  push:
+    paths:
+      - '.github/workflows/webkit-build.yml'
   schedule:
     - cron: '0 */2 * * *'
       
