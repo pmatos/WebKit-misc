@@ -106,3 +106,23 @@ cd /root/webkit-misc/jsc-system
 
 The build time varies with the resource used by guest VM. After this command finishes, the binary is available on `<path to webkit>/WebKitBuild`.
 
+
+### The i386 special case
+
+If you are using a x86_64 machine, there's no need to use `qemu` and therefore the build is much faster.
+There is an image prepared with the dependencies of WebKit called `pmatos/jsc-x86_32`.
+
+Run the following (as above):
+```
+docker run -v <path to webkit on host machine>:/root/webkit -ti pmatos/jsc-x86_32 /bin/bash
+```
+
+You don't need to share the `WebKit-misc` volume since you can call the `build-jsc` and `run-javascriptcore-tests` directly.
+
+Inside the image you can do (`$` indicated the start of the shell):
+
+```
+$ cd /root/webkit
+$ Tools/Scripts/build-jsc --32-bit --release --jsc-only
+$ Tools/Scripts/run-javascriptcore-tests --jsc-only --release --no-build --no-fail-fast
+```

@@ -1,0 +1,12 @@
+FROM debian:buster-slim
+LABEL maintainer="pmatos@linki.tools"
+LABEL description="Debian Buster Slim image with the i386 dependencies to build WebKit"
+
+ENV LC_ALL=C
+
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
+    apt-get install -y cmake g++-multilib libicu-dev:i386 perl ruby python git && \
+    apt-get clean 
+
+CMD ["bash"]

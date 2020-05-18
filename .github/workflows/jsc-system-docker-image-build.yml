@@ -7,6 +7,34 @@ on:
       - '.github/workflows/jsc-system-docker-image-build.yml'
       
 jobs:
+  build-image-i386:
+    runs-on: ubuntu-18.04
+    
+    env:
+      IMAGE_NAME: jsc-x86_32
+
+    steps:
+      - uses: actions/checkout@v2      
+      - name: Build image
+        working-directory: ./jsc-system
+        run: docker build --tag image --file Dockerfile-i386.build .
+      - name: Log into registry
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u pmatos --password-stdin
+      - name: Push image
+        run: |
+          IMAGE_ID=pmatos/$IMAGE_NAME
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          # Strip 'v' prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          # Use docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+
+          docker tag image $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+    
   build-image-arm:
     runs-on: self-hosted
 
@@ -15,7 +43,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
       - name: Build image
         working-directory: ./jsc-system
         run: docker build --build-arg ARCH=arm --tag image --file Dockerfile.build .
@@ -44,7 +71,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
       - name: Build image
         working-directory: ./jsc-system
         run: docker build --build-arg ARCH=mips --tag image --file Dockerfile.build .
