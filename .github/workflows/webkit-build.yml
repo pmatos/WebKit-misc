@@ -23,7 +23,7 @@ jobs:
       - name: Checkout WebKit
         run: git clone --depth=1 https://github.com/webkit/webkit /webkit
       - name: Checking revision
-        workspace: /webkit
+        working-directory: /webkit
         run: git rev-parse --short HEAD
       - name: Set static
         if: matrix.static == 'static'
@@ -62,7 +62,7 @@ jobs:
       - name: Checkout WebKit
         run: git clone --depth=1 https://github.com/webkit/webkit /webkit
       - name: Checking revision
-        workspace: /webkit
+        working-directory: /webkit
         run: git rev-parse --short HEAD
       - name: Set static
         if: matrix.static == 'static'
@@ -105,7 +105,7 @@ jobs:
       - name: Checkout WebKit
         run: git clone --depth=1 https://github.com/webkit/webkit /webkit
       - name: Checking revision
-        workspace: /webkit
+        working-directory: /webkit
         run: git rev-parse --short HEAD
       - name: Set static
         if: matrix.static == 'static'
