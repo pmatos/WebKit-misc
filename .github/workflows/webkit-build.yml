@@ -24,7 +24,7 @@ jobs:
         run: git clone --depth=1 https://github.com/webkit/webkit /webkit
       - name: Checking revision
         working-directory: /webkit
-        run: git show HEAD
+        run: git log --oneline -n1 HEAD
       - name: Set static
         if: matrix.static == 'static'
         run: echo "::set-env name=static::ON"
@@ -63,7 +63,7 @@ jobs:
         run: git clone --depth=1 https://github.com/webkit/webkit /webkit
       - name: Checking revision
         working-directory: /webkit
-        run: git show HEAD
+        run: git log --oneline -n1 HEAD
       - name: Set static
         if: matrix.static == 'static'
         run: echo "::set-env name=static::ON"
@@ -106,7 +106,7 @@ jobs:
         run: git clone --depth=1 https://github.com/webkit/webkit /webkit
       - name: Checking revision
         working-directory: /webkit
-        run: git show HEAD
+        run: git log --oneline -n1 HEAD
       - name: Set static
         if: matrix.static == 'static'
         run: echo "::set-env name=static::ON"
