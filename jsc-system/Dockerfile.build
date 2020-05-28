@@ -14,7 +14,7 @@ RUN ./build.sh -j $(nproc) -a $ARCH --sdk /buildroot
 
 WORKDIR /buildroot
 
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 LABEL maintainer="pmatos@linki.tools"
 LABEL description="Debian Buster Slim image with a buildroot qemu-based system for ARM32/MIPS32 emulation"
 
