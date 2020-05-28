@@ -4,6 +4,7 @@
 # Usage:
 #      build.sh [ --? | -h | --help ]
 #               [ -a | --arch "..." ]
+#               [ -j ]                    Number of cores to use during build (default: $(nproc))
 #               [ -k ]
 #               [ --br2 "..." ]
 #               [ --br2-version "..." ]
