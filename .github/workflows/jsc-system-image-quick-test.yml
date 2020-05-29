@@ -1,0 +1,31 @@
+name: JSC System Docker Images Quick Test
+
+on:
+  push:
+    paths:
+      - 'jsc-system/**'
+      - '.github/workflows/jsc-system-image-quick-test.yml'
+
+
+jobs:
+  quick-test:
+    runs-on: ubuntu-18.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ['arm32', 'mips32el']
+
+    container: pmatos/jsc-qemu-system-${{ matrix.arch }}:latest
+
+    steps:
+      - name: Checkout WebKit
+        uses: actions/checkout@v2
+        with:
+          repository: WebKit/WebKit
+      - name: Checkout WebKit-misc
+        uses: actions/checkout@v2
+      - name: Build
+        run: jsc-system/build-jsc.sh --release WebKit/ /buildroot
+      - name: Test
+        run: jsc-system/test-jsc.sh --release --vms 3 --port 60000 --filter '^stress/regress-.*' WebKit/ /buildroot
