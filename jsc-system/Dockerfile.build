@@ -25,7 +25,7 @@ RUN /buildroot/relocate-sdk.sh
 RUN rm /sdk.tar.gz
 
 RUN mkdir /buildroot/images
-COPY --from=BUILDER /buildroot/images/rootfs.qcow2 /buildroot/images
+COPY --from=BUILDER /buildroot/images /buildroot
 
 RUN apt-get update && apt-get install -y file libfindbin-libs-perl ruby lsof git
 
