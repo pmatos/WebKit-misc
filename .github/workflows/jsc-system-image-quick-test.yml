@@ -22,10 +22,7 @@ jobs:
       - name: Checkout WebKit-misc
         uses: actions/checkout@v2
       - name: Checkout WebKit
-        uses: actions/checkout@v2
-        with:
-          repository: WebKit/WebKit
-          path: /WebKit
+        run: git clone --depth=1 -j $(nproc) https://github.com/WebKit/WebKit /WebKit
       - name: Build
         run: jsc-system/build-jsc.sh --release /WebKit /buildroot
       - name: Test
