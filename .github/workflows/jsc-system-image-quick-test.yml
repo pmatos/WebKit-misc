@@ -19,13 +19,14 @@ jobs:
     container: pmatos/jsc-qemu-system-${{ matrix.arch }}:latest
 
     steps:
+      - name: Checkout WebKit-misc
+        uses: actions/checkout@v2
       - name: Checkout WebKit
         uses: actions/checkout@v2
         with:
           repository: WebKit/WebKit
-      - name: Checkout WebKit-misc
-        uses: actions/checkout@v2
+          path: /WebKit
       - name: Build
-        run: jsc-system/build-jsc.sh --release WebKit/ /buildroot
+        run: jsc-system/build-jsc.sh --release /WebKit /buildroot
       - name: Test
-        run: jsc-system/test-jsc.sh --release --vms 3 --port 60000 --filter '^stress/regress-.*' WebKit/ /buildroot
+        run: jsc-system/test-jsc.sh --release --vms 3 --port 60000 --filter '^stress/regress-.*' /WebKit /buildroot
