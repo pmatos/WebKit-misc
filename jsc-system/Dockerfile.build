@@ -24,8 +24,7 @@ RUN tar xzf /sdk.tar.gz -C /buildroot --strip-components=1
 RUN /buildroot/relocate-sdk.sh 
 RUN rm /sdk.tar.gz
 
-RUN mkdir /buildroot/images
-COPY --from=BUILDER /buildroot/images /buildroot
+COPY --from=BUILDER /buildroot/images /buildroot/
 
 RUN apt-get update && apt-get install -y file libfindbin-libs-perl ruby lsof git
 
