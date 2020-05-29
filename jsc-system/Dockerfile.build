@@ -27,7 +27,7 @@ RUN rm /sdk.tar.gz
 RUN mkdir /buildroot/images
 COPY --from=BUILDER /buildroot/images /buildroot/images
 
-RUN apt-get update && apt-get install -y file libfindbin-libs-perl ruby lsof git
+RUN apt-get update && apt-get install -y file libfindbin-libs-perl lsof git ruby-json ruby-highline
 
 ENV PATH=/buildroot/bin:$PATH
 CMD ["bash"]
