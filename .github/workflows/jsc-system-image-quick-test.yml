@@ -26,4 +26,4 @@ jobs:
       - name: Build
         run: jsc-system/build-jsc.sh --release /WebKit /buildroot
       - name: Test
-        run: jsc-system/test-jsc.sh --release --vms 3 --port 60000 --filter '^stress/regress-.*' /WebKit /buildroot
+        run: jsc-system/test-jsc.sh --release --vms 3 --port 60000 --timeout 1800 --filter '^stress/regress-.*' /WebKit /buildroot
