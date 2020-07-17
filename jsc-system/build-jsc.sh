@@ -23,6 +23,7 @@ Usage:
 	$PROGRAM 
 		 [ -h | --help | --? ]            Show help and exit
 		 [ --version ]                    Show version and exit
+		 [ -f | --force ]                 Delete the build directory if it already exists
 		 [ --release | --debug | --ra ]   JSC Build mode (default: release)
 		 webkit-directory                 Directory with WebKit checkout
 		 buildroot-directory              Directory with Buildroot install
@@ -30,6 +31,7 @@ EOF
 }
 
 MODEFLAG=
+CLOBBER_BUILDDIR=
 
 while test $# -gt 0
 do
@@ -41,6 +43,9 @@ do
 	--help | -h | '--?' )
 	    usage_and_exit 0
 	    ;;
+        --force | -f )
+            CLOBBER_BUILDDIR=true
+            ;;
 	--release )
 	    if [ -n "$MODEFLAG" ]; then
 		error "only one of --release, --debug, --ra allows"
@@ -87,9 +92,8 @@ if [ ! -d "${BRPATH}" ]; then
 fi
 
 
-if [ -d "${WEBKIT_PATH}/WebKitBuild" ]; then
-    echo "Build directory already exists ${WEBKIT_PATH}/WebKitBuild"
-    exit 1
+if [ -d "${WEBKIT_PATH}/WebKitBuild" ] && [ "$CLOBBER_BUILDDIR" = true ]; then
+    rm -rf "${WEBKIT_PATH}/WebKitBuild"
 fi
 
 pushd "${WEBKIT_PATH}" || error "push failure"
