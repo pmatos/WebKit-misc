@@ -134,8 +134,8 @@ fi
 
 TESTTMP_PATH="$(mktemp -d)"
 
-QEMUIMG_PATH=$(find "${BRPATH}" -type f -name qemu-img)
-QEMU_PATH=$(find "${BRPATH}" -type f -name 'qemu-system-*')
+QEMUIMG_PATH=$(find "${BRPATH}" -path "${BRPATH}"/build -prune -o type f -name qemu-img)
+QEMU_PATH=$(find "${BRPATH}" -path "${BRPATH}"/build -prune -o -type f -name 'qemu-system-*')
 ARCH=${QEMU_PATH##*-} # trim everything until the last - (dash)
 HDD_PATH="${BRPATH}/images/rootfs.qcow2"
 REMOTES_PATH="$(mktemp)"
