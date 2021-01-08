@@ -1,3 +1,5 @@
+[![](.github/badges/SponsoredbyIgalia.svg)](https://www.igalia.com)
+
 # WebKit Misc Script
 
 As part of my work as an Igalian (https://www.igalia.com) I am working on WebKit. For some specific tasks I am using a few scripts. I am adding these here as time goes by.
