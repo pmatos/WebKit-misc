@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Login to docker hub
-      run: docker login -u pmatos -p ${{ secrets.DOCKER_PASS }}
+      run: docker login -u pmatos -p ${{ secrets.DOCKER_PASSWORD }}
     - name: Build
       working-directory: containers/jsc32-base/
       run: ./bimage.sh ${{ matrix.arch }}
