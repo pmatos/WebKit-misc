@@ -21,7 +21,7 @@ apt-get install -y git
 git clone --progress --depth=1 git://git.webkit.org/WebKit.git 2> out.log &
 GITPID=$!
 
-apt-get install -y gcc cmake wget unzip g++ python libxml2-dev ninja-build python ruby python-pip
+apt-get install -y gcc cmake wget unzip g++ libxml2-dev ninja-build python3 ruby python3-pip
 
 cd $CWD
 pip install scan-build
